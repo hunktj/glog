@@ -37,26 +37,26 @@ func (c *ConsoleLogger) log(level Level, format string, args ...any) {
 
 //Debug 日志
 func (c *ConsoleLogger) Debug(format string, args ...any) {
-	c.log(LevelDebug, format, args...)
+	c.log(levelDebug, format, args...)
 
 }
 func (c *ConsoleLogger) Info(format string, args ...any) {
-	c.log(LevelInfo, format, args...)
+	c.log(levelInfo, format, args...)
 
 }
 func (c *ConsoleLogger) Warning(format string, args ...any) {
 	//往文件写日志
-	c.log(LevelWarning, format, args...)
+	c.log(levelWarning, format, args...)
 
 }
 func (c *ConsoleLogger) Error(format string, args ...any) {
 	//往文件写日志
-	c.log(LevelError, format, args...)
+	c.log(levelError, format, args...)
 
 }
 func (c *ConsoleLogger) Fatal(format string, args ...any) {
 	//往文件写日志
-	c.log(LevelFatal, format, args...)
+	c.log(levelFatal, format, args...)
 
 }
 

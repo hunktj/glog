@@ -17,16 +17,6 @@ type Filelogger struct {
 	maxSize  int64
 }
 
-// Logger 定义一个logger接口
-type Logger interface {
-	Debug(format string, args ...any)
-	Info(format string, args ...any)
-	Warning(format string, args ...any)
-	Error(format string, args ...any)
-	Fatal(format string, args ...any)
-	Close()
-}
-
 //NewFileLog 是一个生成文件日志结构体的构造函数 初始化日志文件
 func NewFileLog(leverStr, logFilePath, logFileName string) *Filelogger {
 	logLevel := parseLogLevel(leverStr)
@@ -34,7 +24,7 @@ func NewFileLog(leverStr, logFilePath, logFileName string) *Filelogger {
 		level:    logLevel,
 		filePath: logFilePath,
 		fileName: logFileName,
-		maxSize:  10 * 1024 * 1024,
+		maxSize:  2 * 1024 * 1024,
 	}
 	fl.initFile() // 根据上面的文件路径和文件名打开文件日志
 	return fl
@@ -44,7 +34,7 @@ func NewFileLog(leverStr, logFilePath, logFileName string) *Filelogger {
 func (f *Filelogger) initFile() {
 	logName := path.Join(f.filePath, f.fileName)
 	//打开文件
-	fileObj, err := os.OpenFile(logName, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+	fileObj, err := os.OpenFile(logName, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0664)
 
 	if err != nil {
 		panic(fmt.Errorf("open file:%s,%v failed", logName, err))
@@ -56,14 +46,18 @@ func (f *Filelogger) initFile() {
 	if err != nil {
 		panic(fmt.Errorf("open file:%s,%v failed", errLogName, err))
 	}
-	f.file = errFileObj
+	f.errFile = errFileObj
 }
 
 //检查是否要拆分日志文件
-func (f *Filelogger) checkSplit(file *os.File) bool {
-	finfo, _ := file.Stat()
-	fsize := finfo.Size()
-	return fsize >= f.maxSize //当传进来的日志文件大小超过限额 返回true
+func (f *Filelogger) checkSplit(files *os.File) bool {
+	finfo, _ := files.Stat()
+	fsizes := finfo.Size()
+	fmt.Println("ddddd", fsizes)
+	if fsizes < f.maxSize {
+		return false
+	}
+	return true //当传进来的日志文件大小超过限额 返回true
 }
 
 //分装一个切分的方法
@@ -100,7 +94,8 @@ func (f *Filelogger) log(level Level, format string, args ...any) {
 	}
 	fmt.Fprintln(f.file, logMsg)
 	//如果是err或者是fatal级别的日志还要记录到发f.errFile
-	if level >= LevelError {
+	fmt.Println(level)
+	if level >= levelError {
 		if f.checkSplit(f.errFile) {
 			f.errFile = f.splitLogFile(f.errFile)
 		}
@@ -110,30 +105,30 @@ func (f *Filelogger) log(level Level, format string, args ...any) {
 
 //Debug 日志
 func (f *Filelogger) Debug(format string, args ...any) {
-	f.log(LevelDebug, format, args...)
+	f.log(levelDebug, format, args...)
 
 }
 func (f *Filelogger) Info(format string, args ...any) {
-	f.log(LevelInfo, format, args...)
+	f.log(levelInfo, format, args...)
 
 }
 func (f *Filelogger) Warning(format string, args ...any) {
 	//往文件写日志
-	f.log(LevelWarning, format, args...)
+	f.log(levelWarning, format, args...)
 
 }
 func (f *Filelogger) Error(format string, args ...any) {
 	//往文件写日志
-	f.log(LevelError, format, args...)
+	f.log(levelError, format, args...)
 
 }
 func (f *Filelogger) Fatal(format string, args ...any) {
 	//往文件写日志
-	f.log(LevelFatal, format, args...)
+	f.log(levelFatal, format, args...)
 
 }
 func (f *Filelogger) Close() {
-	//往文件写日志
+	//关闭文件
 	f.file.Close()
 	f.errFile.Close()
 
