@@ -53,7 +53,6 @@ func (f *Filelogger) initFile() {
 func (f *Filelogger) checkSplit(files *os.File) bool {
 	finfo, _ := files.Stat()
 	fsizes := finfo.Size()
-	fmt.Println("ddddd", fsizes)
 	if fsizes < f.maxSize {
 		return false
 	}
@@ -94,7 +93,6 @@ func (f *Filelogger) log(level Level, format string, args ...any) {
 	}
 	fmt.Fprintln(f.file, logMsg)
 	//如果是err或者是fatal级别的日志还要记录到发f.errFile
-	fmt.Println(level)
 	if level >= levelError {
 		if f.checkSplit(f.errFile) {
 			f.errFile = f.splitLogFile(f.errFile)

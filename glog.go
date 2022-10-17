@@ -7,24 +7,34 @@ import "strings"
 type Level uint16
 
 const (
-	LevelDebug Level = iota
-	LevelInfo
-	LevelWarning
-	LevelError
-	LevelFatal
+	levelDebug Level = iota
+	levelInfo
+	levelWarning
+	levelError
+	levelFatal
 )
+
+// Logger 定义一个logger接口
+type Logger interface {
+	Debug(format string, args ...any)
+	Info(format string, args ...any)
+	Warning(format string, args ...any)
+	Error(format string, args ...any)
+	Fatal(format string, args ...any)
+	Close()
+}
 
 func getLevelStr(level Level) string {
 	switch level {
-	case LevelDebug:
+	case levelDebug:
 		return "DEBUG"
-	case LevelInfo:
+	case levelInfo:
 		return "INFO"
-	case LevelWarning:
+	case levelWarning:
 		return "WARNING"
-	case LevelError:
+	case levelError:
 		return "ERROR"
-	case LevelFatal:
+	case levelFatal:
 		return "FATAL"
 	default:
 		return "DEBUG"
@@ -36,17 +46,17 @@ func parseLogLevel(leverStr string) Level {
 	leverStr = strings.ToLower(leverStr) //字符串转换成小写
 	switch leverStr {
 	case "debug":
-		return LevelDebug
+		return levelDebug
 	case "info":
-		return LevelInfo
+		return levelInfo
 	case "warning":
-		return LevelWarning
+		return levelWarning
 	case "error":
-		return LevelError
+		return levelError
 	case "fatal":
-		return LevelFatal
+		return levelFatal
 	default:
-		return LevelDebug
+		return levelDebug
 
 	}
 }
