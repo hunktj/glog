@@ -1,6 +1,6 @@
 package main
 
-import "github.com/hunktj/glog"
+import "github.com/vpertj/glog"
 
 var log glog.Logger
 
