@@ -17,6 +17,16 @@ type Filelogger struct {
 	maxSize  int64
 }
 
+// Logger 定义一个logger接口
+type Logger interface {
+	Debug(format string, args ...any)
+	Info(format string, args ...any)
+	Warning(format string, args ...any)
+	Error(format string, args ...any)
+	Fatal(format string, args ...any)
+	Close()
+}
+
 //NewFileLog 是一个生成文件日志结构体的构造函数 初始化日志文件
 func NewFileLog(leverStr, logFilePath, logFileName string) *Filelogger {
 	logLevel := parseLogLevel(leverStr)
